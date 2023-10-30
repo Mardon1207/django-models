@@ -3,9 +3,12 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Product(models.Model):
-    name = models.TextField()
-    description = models.TextField()
-    price = models.TextField()
+    name = models.CharField(max_length=128)
+    description = models.TextField(default="", blank=True)
+    price = models.FloatField()
+    quantity = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
     def __str__(self):
