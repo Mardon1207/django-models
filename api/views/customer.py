@@ -9,6 +9,13 @@ class CustomerView(View):
         if pk is None:
             customers = Customer.objects.all()
 
+            query_params=request.GET
+
+            age=query_params.get('age')
+            if age is not None:
+                customers=Customer.objects.filter(age=age)
+            else:
+                customers = Customer.objects.all()
             results = []
             for customer in customers:
                 results.append({

@@ -34,7 +34,8 @@ class Customer(models.Model):
         validators=[MinValueValidator(limit_value=18), MaxValueValidator(limit_value=35)]
     )
     username = models.CharField(max_length=64, unique=True)
-
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
     def __str__(self):
         if self.last_name:
             return f"{self.first_name} {self.last_name}"
