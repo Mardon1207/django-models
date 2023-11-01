@@ -1,6 +1,9 @@
 from django.views import View
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest, JsonResponse,HttpResponse
 from api.models import Product
+from django.db.models import Q
+from django.forms import model_to_dict
+from django.shortcuts import render
 import json
 
 
@@ -11,24 +14,17 @@ class ProductView(View):
 
             query_params = request.GET
 
-            quantity = query_params.get('quantity')
+            mx = query_params.get('max')
+            mn = query_params.get('min')
 
-            if quantity is not None:
-                products = Product.objects.filter(quantity=quantity)
+            if mx is not None and mn is not None:
+                products = Product.objects.filter(Q(price__lt=mx) & Q(price__gte=mn)).order_by("price")
             else:
-                products = Product.objects.all()
+                products = Product.objects.all().order_by("price")
 
             results = []
             for product in products:
-                results.append({
-                    "id": product.id,
-                    "name": product.name,
-                    "description": product.description,
-                    "price": product.price,
-                    "quantity": product.quantity,
-                    "created_at": product.created_at,
-                    "updated_at": product.updated_at,
-                })
+                results.append(model_to_dict(product))
 
             return JsonResponse(results, safe=False)
         else:
@@ -77,4 +73,11 @@ class ProductView(View):
             produkt=Product.objects.get(id=pk)
             produkt.delete()
             return JsonResponse({'message': 'deleted.'}, status=200)
+    
+class HomeView(View):
+    def get(self,requets)->HttpResponse:
+        context={
+            'products':Product.objects.all()
+        }
+        return render(requets,'index.html',context=context)
         
